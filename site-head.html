@@ -1,0 +1,10 @@
+<!-- aimoneadvisory.com — Site-level HEAD custom code -->
+<!-- Webflow Admin: Site Settings > Custom Code > Head Code -->
+
+<!-- Font smoothing -->
+<style>*{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-o-font-smoothing:antialiased;}</style>
+
+<!-- Skip intro animation if already seen this session -->
+<!-- Runs during HTML parse, before Webflow IX2 can show the loader -->
+<style id="aa-skip"></style>
+<script>try{if(sessionStorage.getItem('aa_seen')){document.getElementById('aa-skip').textContent='.loader-component{display:none!important;pointer-events:none!important}'}}catch(e){}</script>
