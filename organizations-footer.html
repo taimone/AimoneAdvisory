@@ -1,0 +1,44 @@
+<!-- aimoneadvisory.com — For Organizations Page FOOTER custom code -->
+<!-- Webflow Admin: For Organizations page > Page Settings > Custom Code > Footer Code -->
+
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    var track = document.querySelector('.pricing-track');
+    if(!track) return;
+
+    function makeItem(html){
+      var p = document.createElement('p');
+      p.className = 'pricing-item';
+      p.innerHTML = html;
+      return p;
+    }
+
+    // Insert Team AI Workshop and AI Readiness Assessment before Diagnostic Session ($500)
+    var items = track.querySelectorAll('.pricing-item');
+    var insertBefore = null;
+    items.forEach(function(item){
+      if(item.textContent.indexOf('Diagnostic') !== -1 || item.textContent.indexOf('$500') !== -1){
+        insertBefore = item;
+      }
+    });
+
+    var workshop = makeItem('Team AI Workshop &mdash; $1,000&ndash;$2,500 &middot; Half-day or full-day hands-on session for teams of 4&ndash;12; custom agenda, real workflows built together');
+    var assessment = makeItem('Org AI Readiness Assessment &mdash; $500 &middot; 90-min structured review of your workflows, tools, and team capacity; delivers a prioritized AI action plan');
+
+    if(insertBefore){
+      track.insertBefore(workshop, insertBefore);
+      track.insertBefore(assessment, insertBefore);
+    } else {
+      track.appendChild(workshop);
+      track.appendChild(assessment);
+    }
+
+    // Add 501(c)(3) note after the pricing track
+    var note = document.createElement('p');
+    note.style.cssText = 'margin-top:24px;font-size:0.875rem;color:rgba(255,255,255,0.45);';
+    note.innerHTML = '501(c)(3) nonprofit? Pro bono AI advising available on a case-by-case basis. <a href="/about#nonprofit" style="color:inherit;text-decoration:underline;">Start a conversation &rarr;</a>';
+    track.parentNode.insertBefore(note, track.nextSibling);
+  });
+})();
+</script>

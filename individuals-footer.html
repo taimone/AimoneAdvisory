@@ -1,0 +1,45 @@
+<!-- aimoneadvisory.com — For Individuals Page FOOTER custom code -->
+<!-- Webflow Admin: For Individuals page > Page Settings > Custom Code > Footer Code -->
+
+<script>
+(function(){
+  // Inject two new pricing items into For Individuals fee schedule
+  document.addEventListener('DOMContentLoaded', function(){
+    var track = document.querySelector('.pricing-track');
+    if(!track) return;
+
+    function makeItem(html){
+      var p = document.createElement('p');
+      p.className = 'pricing-item';
+      p.innerHTML = html;
+      return p;
+    }
+
+    var assessment = makeItem('AI Readiness Assessment &mdash; $350 &middot; One-time 60-min session: where you are, where AI can take you, and a prioritized roadmap');
+    var automation = makeItem('Personal Automation &mdash; From $50 &middot; One workflow built and delivered &mdash; <a href="/automation" style="color:inherit;text-decoration:underline">see all automations &amp; book directly &rarr;</a>');
+
+    track.appendChild(assessment);
+    track.appendChild(automation);
+
+    // Inject automation teaser section after the main content section
+    var sections = document.querySelectorAll('section, .section');
+    var lastSection = sections[sections.length - 1];
+    if(!lastSection) lastSection = document.body;
+
+    var teaser = document.createElement('section');
+    teaser.style.cssText = 'padding:80px 5%;background:#0a0a0a;';
+    teaser.innerHTML = [
+      '<div class="max-width-large" style="max-width:800px;margin:0 auto;">',
+      '<h2 class="heading-style-h4" style="color:#fff;margin-bottom:16px;">Get a Workflow Built for You &mdash; No Call Required</h2>',
+      '<p style="color:rgba(255,255,255,0.65);font-size:1rem;line-height:1.7;margin-bottom:32px;">',
+      'Simple, repeatable AI automations delivered in 3&ndash;5 days. Pay and book directly &mdash; no intro call, no retainer. ',
+      'Starting at $50 for routine tasks. Perfect if you already know what you want built.',
+      '</p>',
+      '<a href="/automation" class="button" style="display:inline-block;">Browse Automations &amp; Pricing</a>',
+      '</div>'
+    ].join('');
+
+    lastSection.parentNode.insertBefore(teaser, lastSection.nextSibling);
+  });
+})();
+</script>

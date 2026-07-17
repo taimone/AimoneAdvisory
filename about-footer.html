@@ -1,0 +1,33 @@
+<!-- aimoneadvisory.com — About Page FOOTER custom code -->
+<!-- Webflow Admin: About page > Page Settings > Custom Code > Footer Code -->
+
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    // Add anchor target for 501c3 section
+    var anchor = document.createElement('div');
+    anchor.id = 'nonprofit';
+    anchor.style.cssText = 'scroll-margin-top:80px;';
+
+    // Build the 501(c)(3) pro bono section
+    var section = document.createElement('section');
+    section.style.cssText = 'padding:80px 5%;border-top:1px solid rgba(255,255,255,0.1);';
+    section.innerHTML = [
+      '<div class="max-width-large" style="max-width:800px;margin:0 auto;">',
+      '<h2 class="heading-style-h4" style="color:#fff;margin-bottom:16px;">Nonprofit &amp; Pro Bono Advisory</h2>',
+      '<p style="color:rgba(255,255,255,0.65);font-size:1rem;line-height:1.7;margin-bottom:16px;">',
+      "Aimone Advisory reserves capacity each quarter for mission-driven 501(c)(3) organizations that need strategic clarity, technology guidance, or operational support — but don’t have the budget for it.",
+      '</p>',
+      '<p style="color:rgba(255,255,255,0.65);font-size:1rem;line-height:1.7;margin-bottom:32px;">',
+      "This isn’t a discount program. It’s a commitment to doing the work that matters even when the economics don’t. If your organization is doing something important in your community and you’re navigating a crossroads — reach out. No charge, no commitment from this first conversation.",
+      '</p>',
+      '<a href="/contact" class="button" style="display:inline-block;">Start the Conversation</a>',
+      '</div>'
+    ].join('');
+
+    var pageBody = document.querySelector('main') || document.body;
+    pageBody.appendChild(anchor);
+    pageBody.appendChild(section);
+  });
+})();
+</script>

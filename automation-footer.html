@@ -1,0 +1,48 @@
+<!-- aimoneadvisory.com — Automation Services Page FOOTER custom code -->
+<!-- Webflow Admin: Automation Services page > Page Settings > Custom Code > Footer Code -->
+
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    var track = document.querySelector('.pricing-track');
+    if(!track) return;
+
+    function makeItem(html){
+      var p = document.createElement('p');
+      p.className = 'pricing-item';
+      p.innerHTML = html;
+      return p;
+    }
+
+    // Add remaining automation catalog items (first 5 set via Webflow Designer)
+    var moreItems = [
+      'CRM / Pipeline Digest &mdash; $97 &middot; Daily or weekly sales pipeline summary with flags and next-step suggestions',
+      'Document Summarizer &mdash; $50 &middot; Upload any document, contract, or report; get a plain-English summary with key takeaways',
+      'Research Brief &mdash; $75 &middot; You name the topic; Claude researches and delivers a structured brief with sources',
+      'Custom Automation &mdash; From $150 &middot; Something not on this list? Describe the workflow and get a scoped proposal within 24 hours'
+    ];
+    moreItems.forEach(function(html){ track.appendChild(makeItem(html)); });
+
+    // Add how-it-works note below the catalog
+    var note = document.createElement('p');
+    note.style.cssText = 'margin-top:32px;font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;';
+    note.innerHTML = 'How it works: pay, book a 20-min kickoff call to confirm scope, receive your automation in 3&ndash;5 business days. No retainer. No intro call required. Questions? <a href="/contact" style="color:inherit;text-decoration:underline;">Get in touch &rarr;</a>';
+    track.parentNode.insertBefore(note, track.nextSibling);
+
+    // Update the CTA button text if it still says "Book a Free Call"
+    var btn = document.querySelector('.button, [class*="button"]');
+    if(btn && btn.textContent.trim().toLowerCase().indexOf('call') !== -1){
+      btn.textContent = 'Book & Pay';
+    }
+
+    // Update section subtitle (paragraph after "Get a Workflow Built for You" heading)
+    var sectionHeading = document.getElementById('for-individuals');
+    if(sectionHeading){
+      var next = sectionHeading.nextElementSibling;
+      if(next && next.tagName === 'P'){
+        next.textContent = 'Simple, repeatable AI workflows built and delivered — no retainer, no ongoing commitment. Pick what you need, pay, and have it running in 3–5 days.';
+      }
+    }
+  });
+})();
+</script>

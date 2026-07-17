@@ -21,30 +21,23 @@
   });
 
   // Trigger Webflow IX2 scroll-reveal animations without visible scrolling.
-  // Strategy: place a full-screen cover (matching body bg) over the page,
-  // run a synchronous scroll pass through all key positions to fire IX2
-  // handlers, then remove the cover after two rAF cycles so the browser
-  // paints the fully-revealed state in one shot.
   function revealAll(){
     document.body.style.overflow='';
     document.documentElement.style.overflow='';
     var maxH=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)-window.innerHeight;
     if(maxH<1){window.dispatchEvent(new Event('scroll'));return;}
 
-    // Cover the page so the scroll pass is invisible to the user
     var bg=getComputedStyle(document.body).backgroundColor;
     if(!bg||bg==='rgba(0, 0, 0, 0)'||bg==='transparent') bg='#000';
     var cover=document.createElement('div');
     cover.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:2147483647;background:'+bg+';pointer-events:none;';
     document.body.appendChild(cover);
 
-    // Synchronous scroll through key positions — fires IX2 handlers at each stop
     [0,.1,.2,.35,.5,.65,.8,.9,1,.5,0].forEach(function(p){
       window.scrollTo(0,Math.round(maxH*p));
       window.dispatchEvent(new Event('scroll'));
     });
 
-    // Two rAF cycles: first lets IX2 apply DOM changes, second lets browser paint
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         document.body.removeChild(cover);
@@ -54,19 +47,16 @@
 
   function animationDone(ob){
     if(ob)ob.disconnect();
-    sessionStorage.setItem(K,'1');  // Mark animation as seen for this session
+    sessionStorage.setItem(K,'1');
     setTimeout(revealAll,150);
   }
 
-  // After all assets loaded, watch for loader to disappear
   window.addEventListener('load',function(){
     var L=document.querySelector('.loader-component');
-    // No loader present, or already hidden (skip-animation case)
     if(!L||getComputedStyle(L).display==='none'){
       revealAll();
       return;
     }
-    // MutationObserver: detect when Webflow IX2 hides the loader at animation end
     var ob=new MutationObserver(function(){
       var cs=getComputedStyle(L);
       if(cs.display==='none'||parseFloat(cs.opacity)<0.05){
@@ -74,8 +64,36 @@
       }
     });
     ob.observe(L,{attributes:true,attributeFilter:['style','class']});
-    // Safety fallback: force-reveal after 7s regardless
     setTimeout(function(){animationDone(ob);},7000);
+  });
+})();
+</script>
+
+<script>
+// Inject Perspectives / newsletter teaser before the page footer
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    var teaser = document.createElement('section');
+    teaser.style.cssText = 'padding:80px 5%;border-top:1px solid rgba(255,255,255,0.1);';
+    teaser.innerHTML = [
+      '<div class="max-width-large" style="max-width:800px;margin:0 auto;display:flex;flex-wrap:wrap;gap:32px;align-items:center;">',
+      '<div style="flex:1;min-width:260px;">',
+      '<p style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:12px;">Perspectives</p>',
+      '<h2 class="heading-style-h4" style="color:#fff;margin-bottom:12px;">Thinking on business, technology, and decisions</h2>',
+      '<p style="color:rgba(255,255,255,0.6);font-size:0.95rem;line-height:1.7;">Occasional writing from Thomas Aimone on the decisions leaders face, the tools worth understanding, and the patterns worth watching.</p>',
+      '</div>',
+      '<div style="flex:0 0 auto;">',
+      '<a href="/perspectives" class="button" style="display:inline-block;">Read Perspectives</a>',
+      '</div>',
+      '</div>'
+    ].join('');
+
+    var footer = document.querySelector('footer, .footer, [class*="footer"]');
+    if(footer && footer.parentNode){
+      footer.parentNode.insertBefore(teaser, footer);
+    } else {
+      document.body.appendChild(teaser);
+    }
   });
 })();
 </script>
