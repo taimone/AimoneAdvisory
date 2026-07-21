@@ -5,8 +5,8 @@
 (function(){
   document.addEventListener('DOMContentLoaded', function(){
     var CERTS = [
-      {n:'FinOps Certified Practitioner', i:'FinOps Foundation', d:'Jul 2026', c:'#00B4D8', a:'FCP',
-       l:'https://finops.org/wp-content/uploads/2022/09/FinOps-Foundation-logo.svg'},
+      {n:'FinOps Certified Practitioner', i:'FinOps Foundation', d:'Jul 2026', c:'#F5A623', a:'FCP',
+       l:'https://images.credly.com/images/08a5010a-0c0a-448c-981e-c116fedd380c/image.png'},
       {n:'AWS Certified Solutions Architect – Associate', i:'Amazon Web Services', d:'Aug 2017', c:'#FF9900', a:'SAA',
        l:'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg'},
       {n:'AWS Certified Cloud Practitioner', i:'Amazon Web Services', d:'Jan 2019', c:'#FF9900', a:'CCP',
@@ -25,7 +25,7 @@
 
     var pageBody = document.querySelector('main') || document.body;
 
-    // Certifications section
+    // — Certifications section —
     var certSection = document.createElement('section');
     certSection.style.cssText = 'padding:80px 5%;border-top:1px solid rgba(255,255,255,0.1);';
     certSection.innerHTML =
@@ -40,18 +40,18 @@
     CERTS.forEach(function(c){
       var card = document.createElement('div');
       card.style.cssText = 'display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);border-radius:6px;';
-      var lw = document.createElement('div');
-      lw.style.cssText = 'flex:0 0 44px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border-radius:5px;overflow:hidden;';
+      var logoWrap = document.createElement('div');
+      logoWrap.style.cssText = 'flex:0 0 44px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border-radius:5px;overflow:hidden;';
       var img = new Image();
       img.alt = c.a; img.src = c.l;
       img.style.cssText = 'max-width:36px;max-height:36px;object-fit:contain;';
-      img.onerror = (function(cc,lwd){return function(){
-        this.style.display='none'; lwd.style.background=cc.c+'22';
+      img.onerror = (function(cc, lw){ return function(){
+        this.style.display='none'; lw.style.background=cc.c+'22';
         var sp=document.createElement('span');
         sp.style.cssText='font-size:9px;font-weight:800;color:'+cc.c+';text-align:center;line-height:1.1;padding:2px;';
-        sp.textContent=cc.a; lwd.appendChild(sp);
-      };})(c,lw);
-      lw.appendChild(img);
+        sp.textContent=cc.a; lw.appendChild(sp);
+      };})(c, logoWrap);
+      logoWrap.appendChild(img);
       var info = document.createElement('div');
       var nm = document.createElement('div');
       nm.style.cssText = 'font-size:0.82rem;font-weight:600;color:#fff;line-height:1.3;margin-bottom:3px;';
@@ -60,28 +60,30 @@
       mt.style.cssText = 'font-size:0.7rem;color:rgba(255,255,255,0.4);';
       mt.textContent = c.i + ' · ' + c.d;
       info.appendChild(nm); info.appendChild(mt);
-      card.appendChild(lw); card.appendChild(info);
+      card.appendChild(logoWrap); card.appendChild(info);
       grid.appendChild(card);
     });
 
-    // Nonprofit & Pro Bono section
+    // — Nonprofit & Pro Bono section —
     var anchor = document.createElement('div');
     anchor.id = 'nonprofit';
     anchor.style.cssText = 'scroll-margin-top:80px;';
+
     var section = document.createElement('section');
     section.style.cssText = 'padding:80px 5%;border-top:1px solid rgba(255,255,255,0.1);';
     section.innerHTML = [
       '<div class="max-width-large" style="max-width:800px;margin:0 auto;">',
       '<h2 class="heading-style-h4" style="color:#fff;margin-bottom:16px;">Nonprofit &amp; Pro Bono Advisory</h2>',
       '<p style="color:rgba(255,255,255,0.65);font-size:1rem;line-height:1.7;margin-bottom:16px;">',
-      'Aimone Advisory reserves capacity each quarter for mission-driven 501(c)(3) organizations that need strategic clarity, technology guidance, or operational support — but don’t have the budget for it.',
+      'Aimone Advisory reserves capacity each quarter for mission-driven 501(c)(3) organizations that need strategic clarity, technology guidance, or operational support — but don\'t have the budget for it.',
       '</p>',
       '<p style="color:rgba(255,255,255,0.65);font-size:1rem;line-height:1.7;margin-bottom:32px;">',
-      'This isn’t a discount program. It’s a commitment to doing the work that matters even when the economics don’t. If your organization is doing something important in your community and you’re navigating a crossroads — reach out. No charge, no commitment from this first conversation.',
+      'This isn\'t a discount program. It\'s a commitment to doing the work that matters even when the economics don\'t. If your organization is doing something important in your community and you\'re navigating a crossroads — reach out. No charge, no commitment from this first conversation.',
       '</p>',
       '<a href="/contact" class="button" style="display:inline-block;">Start the Conversation</a>',
       '</div>'
     ].join('');
+
     pageBody.appendChild(anchor);
     pageBody.appendChild(section);
   });
