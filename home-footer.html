@@ -5,8 +5,9 @@
 (function(){
   var K='aa_seen';
 
-  // Fix Learn More links to correct page URLs
+  // Fix Learn More links + inject per-column pricing buttons
   document.addEventListener('DOMContentLoaded',function(){
+    // Fix Learn More hrefs
     document.querySelectorAll('a').forEach(function(a){
       var t=a.textContent.trim();
       if(t==='Learn More'||t.indexOf('Learn More')===0){
@@ -19,18 +20,46 @@
       }
     });
 
-    // Find "Pricing for Organizations" button and inject sibling "Pricing for Individuals" button
-    var allLinks = document.querySelectorAll('a');
-    var orgBtn = null;
-    allLinks.forEach(function(a){
-      if(a.textContent.trim() === 'Pricing for Organizations') orgBtn = a;
+    // Hide the original centered "Pricing for Organizations" button group
+    document.querySelectorAll('a').forEach(function(a){
+      if(a.textContent.trim()==='Pricing for Organizations'){
+        var grp=a.parentNode;
+        while(grp&&grp!==document.body){
+          if(grp.children.length===1||(grp.classList&&(grp.classList.contains('button-group')||grp.style.textAlign==='center'))){
+            grp.style.display='none';
+            break;
+          }
+          grp=grp.parentNode;
+        }
+      }
     });
-    if(orgBtn && !document.querySelector('a[href="/individual-based-services"].w-button, a[href="/individual-based-services"][class*="button"]')){
-      var indBtn = orgBtn.cloneNode(true);
-      indBtn.textContent = 'Pricing for Individuals';
-      indBtn.href = '/individual-based-services';
-      orgBtn.insertAdjacentElement('afterend', indBtn);
-    }
+
+    // Inject per-column pricing buttons inside each CMS portfolio item
+    var dynItems=document.querySelectorAll('.w-dyn-item');
+    dynItems.forEach(function(item){
+      // Find the Learn More link to determine org vs individuals
+      var learnMore=null;
+      item.querySelectorAll('a').forEach(function(a){
+        if(a.textContent.trim().indexOf('Learn More')===0) learnMore=a;
+      });
+      if(!learnMore) return;
+      var href=learnMore.getAttribute('href')||'';
+      var isOrg=href.indexOf('organization')!==-1;
+      var btnWrapper=learnMore.closest('[class*="portfolio-button"],[class*="button-wrapper"]')||learnMore.parentNode;
+      // Don't inject twice
+      if(item.querySelector('.aa-pricing-btn')) return;
+      var pricingBtn=document.createElement('a');
+      pricingBtn.className='button w-button aa-pricing-btn';
+      pricingBtn.style.cssText='display:block;margin-top:16px;text-align:center;';
+      if(isOrg){
+        pricingBtn.textContent='Pricing for Organizations';
+        pricingBtn.href='/organization-based-services';
+      } else {
+        pricingBtn.textContent='Pricing for Individuals';
+        pricingBtn.href='/individual-based-services';
+      }
+      btnWrapper.appendChild(pricingBtn);
+    });
   });
 
   // Trigger Webflow IX2 scroll-reveal animations without visible scrolling.
@@ -39,18 +68,15 @@
     document.documentElement.style.overflow='';
     var maxH=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)-window.innerHeight;
     if(maxH<1){window.dispatchEvent(new Event('scroll'));return;}
-
     var bg=getComputedStyle(document.body).backgroundColor;
     if(!bg||bg==='rgba(0, 0, 0, 0)'||bg==='transparent') bg='#000';
     var cover=document.createElement('div');
     cover.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:2147483647;background:'+bg+';pointer-events:none;';
     document.body.appendChild(cover);
-
     [0,.1,.2,.35,.5,.65,.8,.9,1,.5,0].forEach(function(p){
       window.scrollTo(0,Math.round(maxH*p));
       window.dispatchEvent(new Event('scroll'));
     });
-
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         document.body.removeChild(cover);
@@ -100,7 +126,6 @@
       '</div>',
       '</div>'
     ].join('');
-
     var footer = document.querySelector('footer, .footer, [class*="footer"]');
     if(footer && footer.parentNode){
       footer.parentNode.insertBefore(teaser, footer);
