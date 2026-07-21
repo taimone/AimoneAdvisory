@@ -45,12 +45,11 @@
       if(!learnMore) return;
       var href=learnMore.getAttribute('href')||'';
       var isOrg=href.indexOf('organization')!==-1;
-      var btnWrapper=learnMore.closest('[class*="portfolio-button"],[class*="button-wrapper"]')||learnMore.parentNode;
       // Don't inject twice
       if(item.querySelector('.aa-pricing-btn')) return;
       var pricingBtn=document.createElement('a');
       pricingBtn.className='button w-button aa-pricing-btn';
-      pricingBtn.style.cssText='display:block;margin-top:16px;text-align:center;';
+      pricingBtn.style.cssText='display:block;margin-top:12px;text-align:center;';
       if(isOrg){
         pricingBtn.textContent='Pricing for Organizations';
         pricingBtn.href='/organization-based-services';
@@ -58,25 +57,36 @@
         pricingBtn.textContent='Pricing for Individuals';
         pricingBtn.href='/individual-based-services';
       }
-      btnWrapper.appendChild(pricingBtn);
+      // Insert immediately after the Learn More link
+      learnMore.insertAdjacentElement('afterend', pricingBtn);
     });
   });
 
   // Trigger Webflow IX2 scroll-reveal animations without visible scrolling.
+  // Strategy: place a full-screen cover (matching body bg) over the page,
+  // run a synchronous scroll pass through all key positions to fire IX2
+  // handlers, then remove the cover after two rAF cycles so the browser
+  // paints the fully-revealed state in one shot.
   function revealAll(){
     document.body.style.overflow='';
     document.documentElement.style.overflow='';
     var maxH=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)-window.innerHeight;
     if(maxH<1){window.dispatchEvent(new Event('scroll'));return;}
+
+    // Cover the page so the scroll pass is invisible to the user
     var bg=getComputedStyle(document.body).backgroundColor;
     if(!bg||bg==='rgba(0, 0, 0, 0)'||bg==='transparent') bg='#000';
     var cover=document.createElement('div');
     cover.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:2147483647;background:'+bg+';pointer-events:none;';
     document.body.appendChild(cover);
+
+    // Synchronous scroll through key positions — fires IX2 handlers at each stop
     [0,.1,.2,.35,.5,.65,.8,.9,1,.5,0].forEach(function(p){
       window.scrollTo(0,Math.round(maxH*p));
       window.dispatchEvent(new Event('scroll'));
     });
+
+    // Two rAF cycles: first lets IX2 apply DOM changes, second lets browser paint
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         document.body.removeChild(cover);
@@ -86,16 +96,19 @@
 
   function animationDone(ob){
     if(ob)ob.disconnect();
-    sessionStorage.setItem(K,'1');
+    sessionStorage.setItem(K,'1');  // Mark animation as seen for this session
     setTimeout(revealAll,150);
   }
 
+  // After all assets loaded, watch for loader to disappear
   window.addEventListener('load',function(){
     var L=document.querySelector('.loader-component');
+    // No loader present, or already hidden (skip-animation case)
     if(!L||getComputedStyle(L).display==='none'){
       revealAll();
       return;
     }
+    // MutationObserver: detect when Webflow IX2 hides the loader at animation end
     var ob=new MutationObserver(function(){
       var cs=getComputedStyle(L);
       if(cs.display==='none'||parseFloat(cs.opacity)<0.05){
@@ -103,6 +116,7 @@
       }
     });
     ob.observe(L,{attributes:true,attributeFilter:['style','class']});
+    // Safety fallback: force-reveal after 7s regardless
     setTimeout(function(){animationDone(ob);},7000);
   });
 })();
@@ -126,6 +140,8 @@
       '</div>',
       '</div>'
     ].join('');
+
+    // Insert before the site footer element
     var footer = document.querySelector('footer, .footer, [class*="footer"]');
     if(footer && footer.parentNode){
       footer.parentNode.insertBefore(teaser, footer);
