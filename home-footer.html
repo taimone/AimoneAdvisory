@@ -18,6 +18,19 @@
         }
       }
     });
+
+    // Find "Pricing for Organizations" button and inject sibling "Pricing for Individuals" button
+    var allLinks = document.querySelectorAll('a');
+    var orgBtn = null;
+    allLinks.forEach(function(a){
+      if(a.textContent.trim() === 'Pricing for Organizations') orgBtn = a;
+    });
+    if(orgBtn && !document.querySelector('a[href="/individual-based-services"].w-button, a[href="/individual-based-services"][class*="button"]')){
+      var indBtn = orgBtn.cloneNode(true);
+      indBtn.textContent = 'Pricing for Individuals';
+      indBtn.href = '/individual-based-services';
+      orgBtn.insertAdjacentElement('afterend', indBtn);
+    }
   });
 
   // Trigger Webflow IX2 scroll-reveal animations without visible scrolling.

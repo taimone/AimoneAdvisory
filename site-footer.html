@@ -1,0 +1,19 @@
+<!-- aimoneadvisory.com — Site-level FOOTER custom code -->
+<!-- Webflow Admin: Site Settings > Custom Code > Footer Code -->
+
+<script>
+// Fix Services navbar dropdown link hrefs (DropdownLink elements don't accept href via API)
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    var dropItems = document.querySelectorAll('.services-nav-list .w-dropdown-link, .services-nav-list a');
+    dropItems.forEach(function(el){
+      var t = el.textContent.trim();
+      if(t === 'For Organizations'){
+        el.href = '/organization-based-services';
+      } else if(t === 'For Individuals'){
+        el.href = '/individual-based-services';
+      }
+    });
+  });
+})();
+</script>
