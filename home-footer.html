@@ -7,6 +7,13 @@
 
   // Fix Learn More links + inject per-column pricing buttons
   document.addEventListener('DOMContentLoaded',function(){
+    // Fix View Services footer link
+    document.querySelectorAll('a').forEach(function(a){
+      if(a.textContent.trim()==='View Services'){
+        a.setAttribute('href','/organization-based-services');
+      }
+    });
+
     // Fix Learn More hrefs
     document.querySelectorAll('a').forEach(function(a){
       var t=a.textContent.trim();
@@ -37,7 +44,6 @@
     // Inject per-column pricing buttons inside each CMS portfolio item
     var dynItems=document.querySelectorAll('.w-dyn-item');
     dynItems.forEach(function(item){
-      // Find the Learn More link to determine org vs individuals
       var learnMore=null;
       item.querySelectorAll('a').forEach(function(a){
         if(a.textContent.trim().indexOf('Learn More')===0) learnMore=a;
@@ -45,11 +51,10 @@
       if(!learnMore) return;
       var href=learnMore.getAttribute('href')||'';
       var isOrg=href.indexOf('organization')!==-1;
-      // Don't inject twice
       if(item.querySelector('.aa-pricing-btn')) return;
       var pricingBtn=document.createElement('a');
       pricingBtn.className='button w-button aa-pricing-btn';
-      pricingBtn.style.cssText='display:block;margin-top:12px;text-align:center;';
+      pricingBtn.style.cssText='display:inline-block;margin-top:12px;';
       if(isOrg){
         pricingBtn.textContent='Pricing for Organizations';
         pricingBtn.href='/organization-based-services';
@@ -57,36 +62,32 @@
         pricingBtn.textContent='Pricing for Individuals';
         pricingBtn.href='/individual-based-services';
       }
-      // Insert immediately after the Learn More link
-      learnMore.insertAdjacentElement('afterend', pricingBtn);
+      // Wrap Learn More + pricing button in a column so button sits below
+      var wrapper=document.createElement('div');
+      wrapper.style.cssText='display:flex;flex-direction:column;align-items:flex-start;gap:12px;';
+      learnMore.parentNode.replaceChild(wrapper,learnMore);
+      wrapper.appendChild(learnMore);
+      wrapper.appendChild(pricingBtn);
     });
   });
 
-  // Trigger Webflow IX2 scroll-reveal animations without visible scrolling.
-  // Strategy: place a full-screen cover (matching body bg) over the page,
-  // run a synchronous scroll pass through all key positions to fire IX2
-  // handlers, then remove the cover after two rAF cycles so the browser
-  // paints the fully-revealed state in one shot.
   function revealAll(){
     document.body.style.overflow='';
     document.documentElement.style.overflow='';
     var maxH=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)-window.innerHeight;
     if(maxH<1){window.dispatchEvent(new Event('scroll'));return;}
 
-    // Cover the page so the scroll pass is invisible to the user
     var bg=getComputedStyle(document.body).backgroundColor;
     if(!bg||bg==='rgba(0, 0, 0, 0)'||bg==='transparent') bg='#000';
     var cover=document.createElement('div');
     cover.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:2147483647;background:'+bg+';pointer-events:none;';
     document.body.appendChild(cover);
 
-    // Synchronous scroll through key positions — fires IX2 handlers at each stop
     [0,.1,.2,.35,.5,.65,.8,.9,1,.5,0].forEach(function(p){
       window.scrollTo(0,Math.round(maxH*p));
       window.dispatchEvent(new Event('scroll'));
     });
 
-    // Two rAF cycles: first lets IX2 apply DOM changes, second lets browser paint
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         document.body.removeChild(cover);
@@ -96,34 +97,33 @@
 
   function animationDone(ob){
     if(ob)ob.disconnect();
-    sessionStorage.setItem(K,'1');  // Mark animation as seen for this session
+    sessionStorage.setItem(K,'1');
     setTimeout(revealAll,150);
   }
 
-  // After all assets loaded, watch for loader to disappear
   window.addEventListener('load',function(){
     var L=document.querySelector('.loader-component');
-    // No loader present, or already hidden (skip-animation case)
     if(!L||getComputedStyle(L).display==='none'){
       revealAll();
       return;
     }
-    // MutationObserver: detect when Webflow IX2 hides the loader at animation end
     var ob=new MutationObserver(function(){
       var cs=getComputedStyle(L);
       if(cs.display==='none'||parseFloat(cs.opacity)<0.05){
         animationDone(ob);
       }
     });
-    ob.observe(L,{attributes:true,attributeFilter:['style','class']});
-    // Safety fallback: force-reveal after 7s regardless
-    setTimeout(function(){animationDone(ob);},7000);
+    ob.observe(L,{attributes:true,attributeFilter:['style','class'],childList:true,subtree:true});
+    setTimeout(function(){
+      var cs=getComputedStyle(L);
+      if(cs.display==='none'||parseFloat(cs.opacity)<0.05) animationDone(ob);
+    },3000);
+    setTimeout(function(){animationDone(ob);},5000);
   });
 })();
 </script>
 
 <script>
-// Inject Perspectives / newsletter teaser before the page footer
 (function(){
   document.addEventListener('DOMContentLoaded', function(){
     var teaser = document.createElement('section');
@@ -141,7 +141,6 @@
       '</div>'
     ].join('');
 
-    // Insert before the site footer element
     var footer = document.querySelector('footer, .footer, [class*="footer"]');
     if(footer && footer.parentNode){
       footer.parentNode.insertBefore(teaser, footer);
